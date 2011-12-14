@@ -1,0 +1,28 @@
+Package: twittering-mode
+Section: extensions
+License: GPL-2+
+Depends: emacs (>= 22)
+Status: unstable
+Maintainer: Jari Aalto <jari.aalto@cante.net>
+Bugs:
+Upstream: Yuto Hayamizu <hayamiz@users.sf.net>,
+ <y.hayamizu@gmail.com>
+Upstream-Bugs: https://github.com/hayamiz/twittering-mode/issues
+Vcs-Type: git
+Vcs-Url: git://github.com/hayamiz/twittering-mode.git
+Vcs-Browser: https://github.com/hayamiz/twittering-mode
+Homepage: http://twmode.sourceforge.net
+X-Homepage: http://www.sourceforge.net/projects/twmode
+Wiki: http://www.emacswiki.org/emacs/TwitteringMode
+Commentary: twittering-mode.el
+X-Development:
+ 2011-12-14 The Upstream repository unfortunatelly contains many
+ many files that have othing to do with the package. Fortunately
+ those directories are marked with .nosearch files and are
+ interfore excluded by epackage-devel-* functions.
+ .
+ It is better to not to clean up upstream code for the 'master' epackage
+ branch. Upgrading upstream code stays this way easier to merge.
+Description: major mode and client for Twitter
+ Client interface to <http://twitter.ccom>. You can check friends timeline,
+ and update your status.
