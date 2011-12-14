@@ -26,3 +26,6 @@ X-Development:
 Description: major mode and client for Twitter
  Client interface to <http://twitter.ccom>. You can check friends timeline,
  and update your status.
+ .
+ Note: depends on external programs; curl, wget, gnutls, openssl (for encrypted
+ connections).
