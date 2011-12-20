@@ -16,13 +16,13 @@ X-Homepage: http://www.sourceforge.net/projects/twmode
 Wiki: http://www.emacswiki.org/emacs/TwitteringMode
 Commentary: twittering-mode.el
 X-Development:
- 2011-12-14 unsafe because not all functions use same namespace.
+ 2011-12-14 unsafe because not all functions use the same namespace.
  .
- 2011-12-14 The Upstream repository contains many many files that have
- othing to do with the package. Fortunately those directories are marked
- with .nosearch files and are interfore excluded by epackage-devel-*
- functions. It is better to not to clean up upstream code for the 'master'
- epackage branch. Upgrading upstream code stays this way easier to merge.
+ 2011-12-14 The Upstream repository contains many files that have
+ nothing to do with the package. Fortunately those directories are marked
+ with .nosearch files and are excluded by epackage-devel-*
+ functions. It is better to keep upstream code because this makes
+ upgrading upstream code easier; no merge conflicts.
 Description: major mode and client for Twitter
  Client interface to <http://twitter.ccom>. You can check friends timeline,
  and update your status. Start client with M-x twit.
