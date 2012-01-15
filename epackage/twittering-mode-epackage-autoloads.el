@@ -379,4 +379,4 @@
 (autoload 'twittering-revive:twittering         "twittering-mode" "" t)
 (autoload 'twittering-setup-revive              "twittering-mode" "" nil)
 (autoload 'twit                                 "twittering-mode" "" t)
-(provide 'twittering-mode-epkg-autoloads)
+(provide 'twittering-mode-epackage-autoloads)

@@ -78,4 +78,4 @@
 (autoload 'twittering-suspend                   "twittering-mode" "" t)
 (autoload 'twittering-revive:twittering         "twittering-mode" "" t)
 (autoload 'twit                                 "twittering-mode" "" t)
-(provide 'twittering-mode-epkg-install)
+(provide 'twittering-mode-epackage-install)
