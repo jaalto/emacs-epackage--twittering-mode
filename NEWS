@@ -15,6 +15,16 @@
   is equivalent to the following one;
   (setq twittering-edit-skeleton-footer " [footer]")
   (setq twittering-edit-skeleton 'footer)
+* Obsolete variable `twittering-scroll-mode'
+  The variable `twittering-scroll-mode' is obsolete. The current
+  version of twittering-mode always behaves as the previous version
+  does on scroll-mode. To track the latest tweet, put the cursor on
+  the header or footer that is rendered on the latest end.
+* A new key binding for "C-cC-w", future replacement for "C-cD".
+  "C-cD" has been bound to `twittering-delete-status`, the function to
+  delete a tweet. But the binding violates the Emacs Key Binding
+  Conventions. "C-cC-w" is bound to the function. The old binding is
+  also valid, but the new one is recommended.
 
 ### Improvements
 * Edit skeleton according to the current timeline.
@@ -97,6 +107,10 @@
   Since the Emacs LISP program `windows.el' written by HIROSE Yuuji
   implicitly loads `revive.el' if possible, you should also take care
   of the order of loading `windows.el' and the configuration.
+* New format specifier "%u" for `twittering-retweet-format'.
+  "%u" is added as a new format specifier for
+  `twittering-retweet-format'. It is replaced with the URL of the
+  cited tweet.
 * Skeleton for initializing an organic retweet.
   You can use a skeleton as the variable `twittering-retweet-format'
   for initializing an organic retweet. This means that you can also
@@ -104,11 +118,13 @@
   skeleton are converted with the below replacement table and then the
   skeleton is inserted with `skeleton-insert'.
   The replacement table is as follows.
-    %s: screen_name
-    %t: text
-    %%: %
-  This is equivalent to the previous rule applied for
-  `twittering-retweet-format'.
+    %s - The screen-name of the cited tweet.
+    %t - The text of the cited tweet.
+    %u - The URL of the cited tweet.
+    %# - The ID of the cited tweet.
+    %% - % itself.
+  This is equivalent to the rule applied for
+  `twittering-retweet-format' as a string.
   Note that it is inserted before the edit skeleton specified by
   `twittering-edit-skeleton' is performed.
 * Tweet type of edit skeleton for an organic retweet.
@@ -123,6 +139,104 @@
   a tweet on a search timeline replies to. If so, replied tweets can
   be displayed by `twittering-toggle-show-replied-statuses' bound to
   "r" in default.
+* Header and footer on a timeline buffer.
+  On a timeline buffer, the header and footer are rendered. They are
+  special field and do not correspond to tweets. If you press the
+  enter key (or invoking `twittering-enter') on the header or footer,
+  the timeline buffer will be extended by retrieving more tweets
+  according to whether the cursor is placed on the latest end or
+  oldest one.
+  You can track the latest tweet by putting the cursor on the latest
+  side of the header and footer.
+  You can customize the header and footer strings with the variables
+  `twittering-timeline-header' and `twittering-timeline-footer',
+  respectively. Their face can also be customized with the variables
+  `twittering-timeline-header-face' and
+  `twittering-timeline-footer-face'.
+* Support for exclude-if timelines.
+  ":exclude-if/FUNC/SPEC" is added as a new timeline spec. The
+  timeline equals SPEC, except that it does not include tweets that
+  the function FUNC returns non-nil for. FUNC must be a function that
+  receives an alist corresponding to a tweet as an argument. A lambda
+  expression and a symbol bound to a function are valid as FUNC. But a
+  symbol name must not include two special characters, "(" or "/". You
+  can specify any timeline spec for SPEC. For example, you can ignore
+  tweets including "WORD" from the home  timeline by the following
+  timeline spec; ":exclude-if/(lambda (tweet) (string-match \"WORD\"
+  (cdr (assq 'text tweet))))/:home".
+* Support for merge timelines.
+  Merge timelines such as "(SPEC1+SPEC2)" or "(SPEC1+SPEC2+SPEC3)" and
+  so on, are added as new timeline specs. The merge timeline consists
+  of all tweets in the specified timelines. You can specify any
+  timeline spec for constituents. For example, you can see all direct
+  messages, which you have sent or received, on a buffer by the
+  following timeline spec;
+  "(:direct_messages+:direct_messages_sent)".
+* New hook invoked when rendering tweets.
+  A new hook variable `twittering-new-tweets-rendered-hook' is
+  added. The hook is invoked when new tweets are rendered. It is not
+  invoked when rendering tweets that are retrieved formerly. Since the
+  existing hook `twittering-new-tweets-hook' is invoked for each
+  successful retrieval of tweets, it may be invoked for tweets that
+  are not rendered in composite timelines such as exclude-if and merge
+  timelines. The new hook works well for composite timelines.
+  In the new hook, you can use `twittering-rendered-new-tweets' as a
+  list of new tweets. `twittering-rendered-new-tweets-spec' and
+  `twittering-rendered-new-tweets-spec-string' can be used as the
+  timeline spec and the timeline spec string. For detail, see the
+  docstring of the new hook variable.
+* New hook invoked after initializing global variables.
+  A new hook variable `twittering-mode-init-hook' is added. The hook
+  is invoked after initializing global variables. Unlike
+  `twittering-mode-hook', which is invoked every time a buffer is
+  generated for twittering-mode, the new hook invoked only once.
+* Description on a pop-up edit buffer.
+  The description is rendered on the top of the pop-up edit
+  buffer. Which the tweet is a reply, a direct message or an
+  independent ordinary tweet is explicitly displayed. You can also
+  copy the tweet being replied.
+* Switch of a reply and a normal tweet on a pop-up edit buffer.
+  You can toggle whether the tweet being edited will be sent as a
+  reply or a normal tweet by invoking `twittering-edit-toggle-reply'
+  bound to "C-c C-r" in default.
+* Support for exclude-re timelines.
+  ":exclude-re/REGEXP/SPEC" is added as a new timeline spec. The
+  timeline equals SPEC, except that it does not include tweets that
+  match the regular expression REGEXP. In REGEXP, a slash must be
+  escaped with a backslash. For example, tweets including a slash are
+  excluded from the timeline corresponding to the Emacs string literal
+  ":exclude-re/\\//:home".
+* Iterative retrieval of a series of replies.
+  You can trace back a series of replies by a new function
+  `twittering-toggle-or-retrieve-replied-statuses' bound to "R" in
+  default. The function behaves as follows:
+  - If some of tweets in the series of replies pointed by the cursor
+    have not been rendered, try to show them as possible. If some of
+    them have not been retrieved yet, retrieve the latest one and show
+    it.
+  - If all tweets in the series of replies pointed by the cursor
+    have been rendered, hide them.
+  - If the cursor does not point to one of tweets in a series of
+    replies, do nothing.
+* Configuration of how to open a window for an edit buffer.
+  A new variable `twittering-pop-to-buffer-function' is added. It
+  specifies how to open a window for an edit buffer. The default value
+  is `twittering-pop-to-buffer-in-bottom-largest-window', which opens
+  a window by splitting the largest window on the bottom of the
+  current frame. You can also use the function
+  `twittering-pop-to-buffer-in-current-window', which splits the
+  current window.
+* Support for `single tweet' timelines.
+  ":single/ID" is added as a new timeline spec. The timeline consists
+  of a tweet specified by ID. You can read a very old tweet by using
+  the timeline spec.
+* Single tweet timeline from a URL in a tweet.
+  You can visit a `single tweet' timeline from a URL pointing to the
+  tweet by invoking `twittering-other-user-timeline' on the URL. The
+  function is bound to "v" in default.
+* New command to get tweets before a specific time.
+  By using the new command `twittering-get-tweets-before', you can get
+  tweets of the current timeline before a specific time.
 
 ### Bug fixes
 * Fix of displaying a message of authorization.
@@ -164,6 +278,12 @@
   did not appear when the motion was based on display line. The bug
   has been fixed.
   Thanks to lemit who reported the problem.
+* Deletion of a tweet from a buffer after the API is succeeded.
+  A tweet is deleted from a buffer after receiving a successful
+  response of the `destroy-status' API. If the API ends in failure,
+  you can try to delete the status again because the status remains on
+  the buffer.
+* Fix of the escape of a query string in a search timeline spec.
 
  2.0.0: 2011-04-22
 ------------------
